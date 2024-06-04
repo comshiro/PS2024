@@ -18,11 +18,11 @@ b1 = function(size, R, r) {
   err_rel = err_abs / abs(vol)
   
   print("esantion de dimensiune ")
-  size
+  print(size)
   print("estimare: ")
-  estimation
+  print(estimation)
   print("eroarea relativa: ") 
-  err_rel
+  print(err_rel)
 }
 
 b1(20000,10,3)
@@ -31,6 +31,7 @@ b1(100000,10,3)
 
 
 #B2
+#nodurile sunt (0, 0), (2, 0), (2, 2.4),(0, 2.4)
 b2=function(N){
   c=0
   for(i in 1:N){
@@ -42,7 +43,7 @@ b2=function(N){
   }
   return(4.8*c/N)
 }
-b2(20000)
+b2(30000)
 
 
 #B3
@@ -69,11 +70,11 @@ int2 = function(N, a, b) {
   sum = 0
   for (i in 1:N) {
     x = runif(1, a, b) 
-    if (3*x - 3 > 0){
-    sum = sum + ((x + 4) / sqrt(3*x - 3))
+    if (x - 3 > 0){
+    sum = sum + ((x + 4) / ((x - 3)^(1/3)))
     }
   }
-  estimation = sum / N
+  estimation = sum / N * (11-3)
   return(estimation)
 }
 estimare = int2(20000, 3, 11)
@@ -98,5 +99,60 @@ int3=function(N, a, b){
 print("estimare b3/c: ")
 int3(20000,0)
 print("eroare absoluta: ")
-abs(int3(10000,0)-1/2)
+abs(int3(10000,0)-(1/2))
+
+
+#B4
+#a
+n = 1000
+p = 0.25
+q = 0.01
+
+a = function(nr_start, nr_doriti, n, p, q, nrsim) {
+  total=c()
+  for (i in 1:nrsim) {
+  ani = 0
+  nr_initiali=nr_start
+  while (nr_initiali < nr_doriti) {
+    ani = ani + 1
+    noi_users = rbinom(1, n, p)
+    users_retragere = rbinom(1, nr_initiali, q)
+    nr_initiali = nr_initiali + noi_users - users_retragere
+  }
+  total=c(total, ani)
+  }
+  return(mean(total))
+}
+
+rezultat = a(10000, 15000, n, p, q,10000)
+print("Numărul mediu de ani: ")
+rezultat
+
+#b
+b = function(nr_sim, nr_initiali, nr_doriti, n, p, q) {
+  ok = 0
+  
+  for (i in 1:nr_sim) {
+    ani_totali = 40 + 10/12
+    nr_users_final = nr_initiali
+    
+    for (ani in 1:ani_totali) {
+      noi_users = rbinom(1, n, p)
+      users_retragere = rbinom(1, nr_users_final, q)
+      
+      nr_users_final = nr_users_final + noi_users - users_retragere
+    }
+    
+    if (nr_users_final >= nr_doriti) {
+      ok = ok + 1
+    }
+  }
+  probabilitate = ok / nr_sim
+  
+  return(probabilitate)
+}
+
+rezultat = b(10000, 10000, 15000, 1000, 0.25, 0.01)
+print("Probabilitatea: ")
+rezultat
 
